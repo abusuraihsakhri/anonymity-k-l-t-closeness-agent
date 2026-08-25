@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anonymity-k-l-t-closeness-engine"
+version = "2.0.0"
+description = "K-Anonymity Guard: k-Anonymity, l-Diversity & t-Closeness Clinical Arbiter"
+readme = "README.md"
+authors = [{ name = "Dr. Abu Suraih Sakhri", email = "abusuraih@example.com" }]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security/Cryptography",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+anonymity-k-l-t-closeness-engine = "anonymity_guard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/abusuraihsakhri/anonymity-k-l-t-closeness-engine"
+Repository = "https://github.com/abusuraihsakhri/anonymity-k-l-t-closeness-engine.git"
