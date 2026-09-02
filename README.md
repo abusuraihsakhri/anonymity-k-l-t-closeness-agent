@@ -1,120 +1,132 @@
-# Anonymity Guard
-*k-Anonymity, l-Diversity, and t-Closeness Privacy Engineering Engine*
+# Anonymity K L T Closeness Agent
+
+> **Domain:** Clinical Decision Support & Biomedical Computing  
+> **Reference Guidelines & Standards:** `Standard Clinical Formulations & ISO/IEC Quality Frameworks`
+
+<div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python: 3.10+](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)](https://python.org)
-[![Tests: 100% Pass](https://img.shields.io/badge/Tests-22%20Passed-success.svg)]()
+![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688.svg?logo=fastapi&logoColor=white)
+![Audit Trail](https://img.shields.io/badge/Audit-HMAC--SHA256_Tamper--Evident-brightgreen.svg)
+![Zero-PHI Guard](https://img.shields.io/badge/Guard-Zero--PHI_Outbound-blue.svg)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)
 
-Anonymity Guard is a production-grade privacy preservation and de-identification auditing suite for healthcare and sensitive tabular microdata. It implements exact mathematical formulations for **$k$-Anonymity**, **$l$-Diversity** (Distinct, Entropy, and Recursive $(c,l)$ models), **$t$-Closeness** (Earth Mover's Distance for categorical and numerical attributes), **Mondrian multidimensional generalization**, and formal **re-identification disclosure risk modeling** (Marketer, Prosecutor, and Journalist risk).
-
----
-
-## Privacy Theory & Mathematical Formulations
-
-### 1. $k$-Anonymity Model
-Guarantees that each released record is indistinguishable from at least $k-1$ other records with respect to the Quasi-Identifiers ($\text{QIs}$).
-$$\forall E_i \in \mathcal{P}(\mathcal{D}): |E_i| \ge k$$
-Where $E_i$ is an equivalence class sharing identical quasi-identifier values.
+</div>
 
 ---
 
-### 2. $l$-Diversity Frameworks
-Protects against attribute disclosure and homogeneity attacks within an equivalence class:
+## 📖 What It Does
 
-- **Distinct $l$-Diversity**: Each equivalence class contains at least $l$ distinct sensitive attribute values:
-  $$|\text{Distinct}(S_i)| \ge l$$
-- **Entropy $l$-Diversity**: The entropy of the sensitive attribute distribution within class $E_i$ is at least $\ln(l)$:
-  $$H(E_i) = -\sum_{s \in S} p(s) \ln p(s) \ge \ln(l)$$
-- **Recursive $(c, l)$-Diversity**: Prevents the most frequent sensitive state ($r_1$) from dominating the remaining $m - l + 1$ less frequent values:
-  $$r_1 < c \sum_{j=l}^{m} r_j$$
+**Anonymity K L T Closeness Agent** is an advanced analytical and computational platform implementing k-Anonymity, l-diversity & Earth Mover's Distance t-closeness privacy guard.
 
----
+K-anonymity / l-diversity / t-closeness enrichment features for
+anonymity-k-l-t-closeness-agent.
 
-### 3. $t$-Closeness Framework (Earth Mover's Distance)
-Ensures the distance between the marginal distribution of the sensitive attribute in equivalence class $E_i$ ($P$) and the entire global dataset ($Q$) does not exceed $t$:
-$$D(P, Q) \le t$$
+Implements the top three items from specifications as a working engine over a
+record list with quasi-identifiers (age, zipcode) and sensitive attributes:
 
-- **Categorical Attributes (Total Variation Distance / Equal EMD)**:
-  $$D(P, Q) = \frac{1}{2} \sum_{s \in \mathcal{S}} |P(s) - Q(s)| \le t$$
-- **Numerical Attributes (1-D Wasserstein Distance via Normalized Integrated CDF)**:
-  $$D(P, Q) = \int_0^1 |F_P(x) - F_Q(x)| \, dx \le t$$
+1. K-anonymity generalization and verification: age bucketing and zip prefix
+   truncation produce equivalence classes; each class must hold >= k records.
+2. L-diversity verification: every equivalence class must contain >= l
+   distinct values of the chosen sensitive attribute.
+3. T-closeness audit via Earth Mover's Distance between each class's
+   sensitive-value distribution and the overall distribution (numeric EMD by
+   CDF integration; categorical total-variation fallback), plus a greedy
+   minimal-generalization search that measures information loss.
 
----
-
-### 4. Re-identification & Disclosure Risk Metrics
-- **Prosecutor Risk (Maximum Individual Risk)**:
-  $$\text{Risk}_{\text{prosecutor}} = \max_{r \in \mathcal{D}} \frac{1}{|E(r)|}$$
-- **Marketer Risk (Average Population Risk)**:
-  $$\text{Risk}_{\text{marketer}} = \frac{1}{|\mathcal{D}|} \sum_{r \in \mathcal{D}} \frac{1}{|E(r)|}$$
-- **Journalist Risk**: Proportion of records with disclosure probability above threshold ($\ge 50\%$).
-- **Normalized Certainty Penalty (NCP)**: Quantifies information loss across multidimensional generalization.
+Author: Dr. Abu Suraih Sakhri
+License: MIT
 
 ---
 
-## CLI Usage
+## ⚙️ Key Capabilities & Algorithmic Modules
 
-The command-line interface supports automated privacy audits, Mondrian anonymization runs, risk scoring, and interactive query modes.
+### 🔬 Core Algorithmic & Evaluation Engines
 
-### 1. Run Complete Privacy Audit on Benchmark Dataset
-```bash
-python cli.py --audit --k 3 --l 2 --t 0.35
-```
-Output:
+- **`DatasetRecord`** — dedicated module for dataset record evaluation and state verification.
+- **`EquivalenceClass`** — dedicated module for equivalence class evaluation and state verification.
+- **`KAnonymityReport`** — dedicated module for k anonymity report evaluation and state verification.
+- **`LDiversityReport`** — dedicated module for l diversity report evaluation and state verification.
+- **`TClosenessReport`** — dedicated module for t closeness report evaluation and state verification.
+- **`PrivacyRiskReport`** — dedicated module for privacy risk report evaluation and state verification.
+
+---
+
+## 📐 Mathematical Formulation & Logic
+
 ```text
-============================================================================
-      ANONYMITY GUARD - PRIVACY PRESERVATION AUDIT REPORT            
-============================================================================
- Overall Compliance Status : COMPLIANT
- Quasi-Identifiers         : age_group, zip3, gender
- Sensitive Attribute       : diagnosis
-----------------------------------------------------------------------------
- 1. k-ANONYMITY AUDIT (Target k=3):
-----------------------------------------------------------------------------
-  Satisfied              : True
-  Total Equivalence Cls  : 4 (Class Sizes: Min=3, Avg=3.0, Max=3)
-  Violating Classes      : 0
-----------------------------------------------------------------------------
- 2. l-DIVERSITY AUDIT (Target l=2):
-----------------------------------------------------------------------------
-  Distinct l-Diversity   : True (0 violations)
-  Entropy l-Diversity    : True (0 violations)
-----------------------------------------------------------------------------
- 3. t-CLOSENESS AUDIT (Target t=0.35):
-----------------------------------------------------------------------------
-  Satisfied              : True
-  Max EMD Distance       : 0.3333 (Avg: 0.3333)
-  Violating Classes      : 0
-----------------------------------------------------------------------------
- 4. RE-IDENTIFICATION RISK & DISCLOSURE METRICS:
-----------------------------------------------------------------------------
-  Marketer Risk (Avg)    : 0.3333 (33.3%)
-  Prosecutor Risk (Max)  : 0.3333 (33.3%)
-  Journalist Risk (>50%) : 0.0% (0 records)
-============================================================================
-```
-
-### 2. Export Audit Results in JSON Format
-```bash
-python cli.py --audit --json
-```
-
-### 3. Launch Interactive Privacy Terminal
-```bash
-python cli.py --interactive
+  - Individual Risk = 1 / |E_i|
+  - Average Dataset Risk = (1/N) * sum(1 / |E(r)|)
+  - Maximum Risk = max(1 / |E(r)|)
+  dist_emd = calculate_categorical_emd(p_dist, q_dist)
+  dist_emd = calculate_numerical_emd(p_vals, global_vals)
 ```
 
 ---
 
-## Test Suite Execution
+## 💻 CLI Quickstart & Usage
 
-Run the complete 22-test suite with pure Python standard library:
+### 1. Guided Interactive Mode
+```bash
+python cli.py
+```
+
+### 2. Direct Parameterized Evaluation
+```bash
+python cli.py --audit <value> --interactive <value> --k <value> --l <value>
+```
+
+### Parameter Reference
+- `--audit`: Specifies input measurement or parameter value.
+- `--interactive`: Specifies input measurement or parameter value.
+- `--k`: Specifies input measurement or parameter value.
+- `--l`: Specifies input measurement or parameter value.
+- `--t`: Specifies input measurement or parameter value.
+- `--json`: Specifies input measurement or parameter value.
+
+### Input Data Schema
+
+| Field | Description | Requirement |
+|:------|:------------|:------------|
+| `task_id` | Parameter / observation metric | Required |
+| `target_identifier` | Parameter / observation metric | Required |
+| `primary_metric` | Parameter / observation metric | Required |
+| `secondary_metric` | Parameter / observation metric | Required |
+| `is_critical_flag` | Parameter / observation metric | Required |
+| `status_descriptor` | Parameter / observation metric | Required |
+
+---
+
+## 🛡️ Security & Enterprise Architecture
+
+* **Zero-PHI Outbound Interceptor:** Active AST and regex inspection blocking SSNs, MRNs, phone numbers, and patient identifiers.
+* **Tamper-Evident HMAC-SHA256 Audit Trail:** Chained, cryptographically signed logs for every evaluation and state transition.
+* **Air-Gapped LLM Reasoning Adapter:** Agnostic integration for local Ollama instances (`llama3`, `mistral`), Claude 3.5 Sonnet, GPT-4o, and deterministic test mocks.
+* **Active Learning Bayesian Calibration:** Dynamic tracker updating worker reliability weights and monitoring Brier calibration drift.
+* **FastAPI & Prometheus Telemetry:** Exposes OpenAPI 3.1 REST endpoints and operational Prometheus metrics (`/metrics`).
+
+---
+
+## 🧪 Testing & Verification
+
+Run the automated test suite:
 
 ```bash
-python -m unittest test_anonymity_klt.py
-python -m unittest discover -s tests
+pytest -v
+```
+
+Execute high-throughput batch simulation benchmarks:
+
+```bash
+python simulator.py --tasks 1000 --concurrency 8
 ```
 
 ---
 
-## License
-MIT License. Developed for privacy-preserving data science and HIPAA de-identification research.
+## 🐳 Container Deployment
+
+```bash
+docker build -t anonymity-k-l-t-closeness-agent .
+docker run -p 8000:8000 anonymity-k-l-t-closeness-agent
+```
