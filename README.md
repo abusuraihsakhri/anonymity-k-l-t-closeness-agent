@@ -1,132 +1,119 @@
-# Anonymity K L T Closeness Agent
+# Anonymity Guard: k-Anonymity, l-Diversity & t-Closeness Engine
 
-> **Domain:** Clinical Decision Support & Biomedical Computing  
-> **Reference Guidelines & Standards:** `Standard Clinical Formulations & ISO/IEC Quality Frameworks`
+A pure Python privacy-preserving data anonymization, re-identification risk auditing, and multidimensional generalization engine implementing:
+- **$k$-Anonymity Verification:** Groups records into equivalence classes sharing identical quasi-identifiers (e.g. age bracket, ZIP code prefix, gender) ensuring each group size $|E| \ge k$.
+- **Distinct & Entropy $l$-Diversity:** Guards against attribute disclosure by enforcing at least $l$ distinct sensitive values per equivalence class ($-\sum p_i \ln p_i \ge \ln l$).
+- **$t$-Closeness via Earth Mover's Distance (EMD):** Measures distance between the intra-class sensitive distribution ($P$) and the overall population distribution ($Q$) such that $D[P, Q] \le t$.
+  - Continuous/ordered attributes: Kolmogorov-Smirnov cumulative distribution metric:
+    $$D[P, Q] = \int |F_P(x) - F_Q(x)| dx$$
+  - Categorical attributes: Total variation distance / variation metric:
+    $$D[P, Q] = \frac{1}{2} \sum_{s \in S} |p_s - q_s|$$
+- **Re-identification Risk Profiling:** Calculates individual risk ($1/|E_i|$), prosecutor risk ($\max(1/|E_i|)$), marketer risk (sample average), and journalist risk percentage.
+- **Top-Down Mondrian Anonymization:** Multidimensional greedy spatial partitioning minimizing Normalized Certainty Penalty (NCP) information loss.
+- **High-Throughput Batch CSV Cohort Auditing:** Audits research and registry data pipelines for HIPAA Safe Harbor and Expert Determination privacy standards.
 
-<div align="center">
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688.svg?logo=fastapi&logoColor=white)
-![Audit Trail](https://img.shields.io/badge/Audit-HMAC--SHA256_Tamper--Evident-brightgreen.svg)
-![Zero-PHI Guard](https://img.shields.io/badge/Guard-Zero--PHI_Outbound-blue.svg)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)
-
-</div>
-
----
-
-## 📖 What It Does
-
-**Anonymity K L T Closeness Agent** is an advanced analytical and computational platform implementing k-Anonymity, l-diversity & Earth Mover's Distance t-closeness privacy guard.
-
-K-anonymity / l-diversity / t-closeness enrichment features for
-anonymity-k-l-t-closeness-agent.
-
-Implements the top three items from specifications as a working engine over a
-record list with quasi-identifiers (age, zipcode) and sensitive attributes:
-
-1. K-anonymity generalization and verification: age bucketing and zip prefix
-   truncation produce equivalence classes; each class must hold >= k records.
-2. L-diversity verification: every equivalence class must contain >= l
-   distinct values of the chosen sensitive attribute.
-3. T-closeness audit via Earth Mover's Distance between each class's
-   sensitive-value distribution and the overall distribution (numeric EMD by
-   CDF integration; categorical total-variation fallback), plus a greedy
-   minimal-generalization search that measures information loss.
-
-Author: Dr. Abu Suraih Sakhri
-License: MIT
+Requires Python standard library only (zero external runtime dependencies).
 
 ---
 
-## ⚙️ Key Capabilities & Algorithmic Modules
+## Privacy Formulations & Mathematical Logic
 
-### 🔬 Core Algorithmic & Evaluation Engines
+### $k$-Anonymity
+$$\forall E \in \mathcal{E}, \quad |E| \ge k$$
 
-- **`DatasetRecord`** — dedicated module for dataset record evaluation and state verification.
-- **`EquivalenceClass`** — dedicated module for equivalence class evaluation and state verification.
-- **`KAnonymityReport`** — dedicated module for k anonymity report evaluation and state verification.
-- **`LDiversityReport`** — dedicated module for l diversity report evaluation and state verification.
-- **`TClosenessReport`** — dedicated module for t closeness report evaluation and state verification.
-- **`PrivacyRiskReport`** — dedicated module for privacy risk report evaluation and state verification.
+### Distinct $l$-Diversity
+$$\forall E \in \mathcal{E}, \quad |\{s \in S : \exists r \in E, r.S = s\}| \ge l$$
 
----
+### Earth Mover's Distance $t$-Closeness
+$$D[P_E, Q] \le t \quad \forall E \in \mathcal{E}$$
 
-## 📐 Mathematical Formulation & Logic
-
-```text
-  - Individual Risk = 1 / |E_i|
-  - Average Dataset Risk = (1/N) * sum(1 / |E(r)|)
-  - Maximum Risk = max(1 / |E(r)|)
-  dist_emd = calculate_categorical_emd(p_dist, q_dist)
-  dist_emd = calculate_numerical_emd(p_vals, global_vals)
-```
+### Normalized Certainty Penalty (Information Loss)
+$$NCP(r) = \sum_{i=1}^d \frac{|v_i^{max} - v_i^{min}|}{|D_i^{max} - D_i^{min}|}$$
 
 ---
 
-## 💻 CLI Quickstart & Usage
+## Features
 
-### 1. Guided Interactive Mode
+- **HIPAA Safe Harbor & Expert Determination:** Quantifies re-identification risks to satisfy statutory de-identification requirements.
+- **Skewness & Similarity Attack Defense:** Combines $l$-diversity with $t$-closeness to eliminate probabilistic inference breaches.
+- **Mondrian Anonymizer:** Built-in multidimensional recursive partitioning algorithm.
+- **Batch CSV Processing:** High-throughput batch auditing for clinical and demographic data files.
+
+---
+
+## Installation & Requirements
+
+- Python 3.10+ (tested on 3.10, 3.11, 3.12)
+- Zero external runtime dependencies. `pytest` is optional for running tests.
+
 ```bash
-python cli.py
+git clone https://github.com/abusuraihsakhri/anonymity-k-l-t-closeness-agent.git
+cd anonymity-k-l-t-closeness-agent
 ```
 
-### 2. Direct Parameterized Evaluation
+---
+
+## CLI Usage
+
+### 1. Run Complete Privacy Audit on Benchmark Cohort
 ```bash
-python cli.py --audit <value> --interactive <value> --k <value> --l <value>
+python cli.py --audit --json
 ```
 
-### Parameter Reference
-- `--audit`: Specifies input measurement or parameter value.
-- `--interactive`: Specifies input measurement or parameter value.
-- `--k`: Specifies input measurement or parameter value.
-- `--l`: Specifies input measurement or parameter value.
-- `--t`: Specifies input measurement or parameter value.
-- `--json`: Specifies input measurement or parameter value.
+### 2. Audit with Custom Privacy Thresholds ($k=5, l=3, t=0.25$)
+```bash
+python cli.py --audit --k 5 --l 3 --t 0.25
+```
 
-### Input Data Schema
-
-| Field | Description | Requirement |
-|:------|:------------|:------------|
-| `task_id` | Parameter / observation metric | Required |
-| `target_identifier` | Parameter / observation metric | Required |
-| `primary_metric` | Parameter / observation metric | Required |
-| `secondary_metric` | Parameter / observation metric | Required |
-| `is_critical_flag` | Parameter / observation metric | Required |
-| `status_descriptor` | Parameter / observation metric | Required |
+### 3. Batch CSV Processing
+```bash
+python cli.py --batch sample.csv results.csv
+```
 
 ---
 
-## 🛡️ Security & Enterprise Architecture
+## Python API Quickstart
 
-* **Zero-PHI Outbound Interceptor:** Active AST and regex inspection blocking SSNs, MRNs, phone numbers, and patient identifiers.
-* **Tamper-Evident HMAC-SHA256 Audit Trail:** Chained, cryptographically signed logs for every evaluation and state transition.
-* **Air-Gapped LLM Reasoning Adapter:** Agnostic integration for local Ollama instances (`llama3`, `mistral`), Claude 3.5 Sonnet, GPT-4o, and deterministic test mocks.
-* **Active Learning Bayesian Calibration:** Dynamic tracker updating worker reliability weights and monitoring Brier calibration drift.
-* **FastAPI & Prometheus Telemetry:** Exposes OpenAPI 3.1 REST endpoints and operational Prometheus metrics (`/metrics`).
+```python
+from anonymity_klt import (
+    AnonymityGuardPipeline,
+    DatasetRecord,
+    MondrianAnonymizer,
+)
+
+# 1. Initialize Pipeline
+pipeline = AnonymityGuardPipeline()
+
+# 2. Build Records with Generalized Attributes
+records = [
+    DatasetRecord(1, {"age_group": "20-29", "zip3": "100**", "gender": "Female", "diagnosis": "Asthma"}),
+    DatasetRecord(2, {"age_group": "20-29", "zip3": "100**", "gender": "Female", "diagnosis": "Diabetes"}),
+    DatasetRecord(3, {"age_group": "20-29", "zip3": "100**", "gender": "Female", "diagnosis": "Hypertension"}),
+]
+
+# 3. Audit Dataset
+report = pipeline.audit_dataset(
+    records=records,
+    quasi_identifiers=["age_group", "zip3", "gender"],
+    sensitive_attribute="diagnosis",
+    k=3,
+    l=2,
+    t=0.35,
+)
+
+print(f"Dataset k-Anonymous: {report['k_anonymity']['is_k_anonymous']}")
+print(f"Dataset l-Diverse: {report['distinct_l_diversity']['is_l_diverse']}")
+print(f"Dataset t-Close: {report['t_closeness']['is_t_close']}")
+print(f"Prosecutor Risk: {report['privacy_risks']['prosecutor_risk_max']}")
+```
 
 ---
 
-## 🧪 Testing & Verification
+## Running Tests
 
-Run the automated test suite:
+Run the test suite using standard `unittest` or `pytest`:
 
 ```bash
 pytest -v
 ```
 
-Execute high-throughput batch simulation benchmarks:
-
-```bash
-python simulator.py --tasks 1000 --concurrency 8
-```
-
----
-
-## 🐳 Container Deployment
-
-```bash
-docker build -t anonymity-k-l-t-closeness-agent .
-docker run -p 8000:8000 anonymity-k-l-t-closeness-agent
-```

@@ -240,5 +240,28 @@ class TestAnonymityGuardPipeline(unittest.TestCase):
         self.assertTrue(report["t_closeness"]["is_t_close"])
 
 
+class TestCLICommands(unittest.TestCase):
+    def test_cli_audit_json(self):
+        from cli import main
+        import io
+        from unittest.mock import patch
+        with patch("sys.stdout", new=io.StringIO()) as fake_out:
+            code = main(["--audit", "--json"])
+            self.assertEqual(code, 0)
+            self.assertIn("k_anonymity", fake_out.getvalue())
+
+    def test_cli_batch(self):
+        from cli import main
+        import os
+        import tempfile
+        sample_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sample.csv")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_file = os.path.join(tmpdir, "out_batch.csv")
+            code = main(["--batch", sample_path, out_file])
+            self.assertEqual(code, 0)
+            self.assertTrue(os.path.exists(out_file))
+
+
 if __name__ == "__main__":
     unittest.main()
+

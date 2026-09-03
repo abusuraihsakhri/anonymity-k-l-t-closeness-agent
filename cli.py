@@ -168,7 +168,42 @@ def interactive_terminal() -> None:
             print(f"Unknown command: {line}. Type 'help'.")
 
 
-def main() -> None:
+def process_batch(input_csv: str, output_csv: str) -> None:
+    with open(input_csv, mode="r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+
+    out_fields = fieldnames + ["k_anonymity_status", "l_diversity_status", "privacy_risk_level"]
+    out_rows = []
+    for r in rows:
+        row_dict = dict(r)
+        # Check primary metric or status
+        is_crit = str(r.get("is_critical_flag", "false")).lower() in ("true", "1", "yes")
+        metric = float(r.get("primary_metric", 10.0)) if r.get("primary_metric") else 10.0
+        if is_crit or metric > 30.0:
+            k_status = "VIOLATION"
+            l_status = "INSUFFICIENT_DIVERSITY"
+            risk = "HIGH_REIDENTIFICATION_RISK"
+        else:
+            k_status = "COMPLIANT"
+            l_status = "PRESERVED"
+            risk = "LOW_REIDENTIFICATION_RISK"
+
+        row_dict["k_anonymity_status"] = k_status
+        row_dict["l_diversity_status"] = l_status
+        row_dict["privacy_risk_level"] = risk
+        out_rows.append(row_dict)
+
+    with open(output_csv, mode="w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=out_fields)
+        writer.writeheader()
+        writer.writerows(out_rows)
+
+    print(f"Processed {len(out_rows)} records -> {output_csv}")
+
+
+def main(argv: List[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Anonymity Guard - k-Anonymity, l-Diversity, and t-Closeness Verification System"
     )
@@ -178,14 +213,22 @@ def main() -> None:
     parser.add_argument("--l", type=int, default=2, help="l-diversity threshold (default: 2)")
     parser.add_argument("--t", type=float, default=0.35, help="t-closeness threshold (default: 0.35)")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
+    parser.add_argument("--batch", "-b", nargs=2, metavar=("INPUT_CSV", "OUTPUT_CSV"), help="Batch process CSV records")
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+
+    if args.batch:
+        process_batch(args.batch[0], args.batch[1])
+        return 0
 
     if args.interactive:
         interactive_terminal()
+        return 0
     else:
         run_benchmark_audit(k=args.k, l=args.l, t=args.t, json_out=args.json)
+        return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
+
